@@ -74,7 +74,7 @@ class Ui_MainWindow(object):
         self.groupBox.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
         self.label_status = QLabel(self.groupBox)
         self.label_status.setObjectName(u"label_status")
-        self.label_status.setGeometry(QRect(20, 10, 91, 61))
+        self.label_status.setGeometry(QRect(20, 10, 201, 61))
         self.label_status.setFont(font1)
         self.label_current_status = QLabel(self.groupBox)
         self.label_current_status.setObjectName(u"label_current_status")
@@ -131,7 +131,7 @@ class Ui_MainWindow(object):
         self.label_co_mode.setText(QCoreApplication.translate("MainWindow", u"Conservation", None))
         self.button_conservation.setText(QCoreApplication.translate("MainWindow", u"De/activation", None))
         self.groupBox.setTitle("")
-        self.label_status.setText(QCoreApplication.translate("MainWindow", u"Status", None))
+        self.label_status.setText(QCoreApplication.translate("MainWindow", u"Battery status", None))
         self.label_current_status.setText(QCoreApplication.translate("MainWindow", u"n/a", None))
         self.label_remaining.setText(QCoreApplication.translate("MainWindow", u"Consrvation is complete.", None))
     # retranslateUi

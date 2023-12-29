@@ -5,16 +5,14 @@ import subprocess
 import sys
 import time
 
-import qdarktheme
 from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtCore import QRect
 
 from ui_main import Ui_MainWindow
 
 
 class BatteryCharging(QtWidgets.QMainWindow):
     def __init__(self):
-        super(BatteryCharging, self).__init__()
+        super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.current_charge = None
@@ -126,7 +124,6 @@ class BatteryCharging(QtWidgets.QMainWindow):
             time.sleep(3)
 
         data = re.split(r'\n|,', check_status)
-        print(data)
         current_charge = data[1][:-1].strip()
         charging_status = data[0][11:]
 
@@ -273,9 +270,8 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    # qdarktheme.setup_theme()
     window = BatteryCharging()
-    window.show()
+    # window.show()
     window.load_last_charging_mode()
     window.battery_status()
 
