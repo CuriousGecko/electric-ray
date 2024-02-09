@@ -11,6 +11,13 @@ from ui_main import Ui_MainWindow
 
 
 class BatteryCharging(QtWidgets.QMainWindow):
+    MODES = {
+        'rapid': '0x07',
+        'slow': '0x08',
+        'activate_conservation': '0x03',
+        'deactivate_conservation': '0x05',
+    }
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -37,8 +44,10 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.conservation_timer.start(3000)
         self.conservation_timer.timeout.connect(self.battery_conservation)
 
+        self.setWindowIcon(QtGui.QIcon(':images/scramp_fish.png'))
+
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QtGui.QIcon('scramp_fish.png'))
+        self.tray_icon.setIcon(QtGui.QIcon(':images/scramp_fish.png'))
         self.tray_icon.setVisible(True)
         self.tray_icon.activated.connect(self.tray_icon_activated)
 
@@ -51,13 +60,6 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.tray_icon.setContextMenu(self.tray_icon_menu)
         self.tray_icon_menu.addAction(show_action)
         self.tray_icon_menu.addAction(exit_action)
-
-    MODES = {
-        'rapid': '0x07',
-        'slow': '0x08',
-        'activate_conservation': '0x03',
-        'deactivate_conservation': '0x05',
-    }
 
     def closeEvent(self, event):
         event.ignore()
@@ -204,7 +206,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
     def _update_discharging_info(self):
         self.conservation_info = False
         if self.warning_icon:
-            self._set_tray_icon('scramp_fish.png')
+            self._set_tray_icon(':images/scramp_fish.png')
             self.warning_icon = False
 
     def _update_warning_info(self):
@@ -212,12 +214,12 @@ class BatteryCharging(QtWidgets.QMainWindow):
             'Please, discharge the battery to 60%'
         )
         if not self.warning_icon:
-            self._set_tray_icon('scramp_fish_warning.png')
+            self._set_tray_icon(':images/scramp_fish_warning.png')
             self.warning_icon = True
 
     def _update_normal_info(self):
         if self.warning_icon:
-            self._set_tray_icon('scramp_fish.png')
+            self._set_tray_icon(':images/scramp_fish.png')
             self.warning_icon = False
         if self.charging_status == 'Not charging':
             self.ui.label_remaining.setText(
@@ -251,7 +253,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self.ui.button_conservation.setChecked(True)
             self.setup_ui_charging_mode('slow', True)
         else:
-            charging_mode_warning = 'Select the charging mode'
+            charging_mode_warning = 'Select the charging mode.'
             if os.path.exists('charging_mode.json'):
                 with open('charging_mode.json', 'r') as read_file:
                     mode = json.load(read_file)

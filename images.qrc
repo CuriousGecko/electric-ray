@@ -1,5 +1,0 @@
-<RCC>
-  <qresource prefix="newPrefix">
-    <file>scramp_fish.png</file>
-  </qresource>
-</RCC>

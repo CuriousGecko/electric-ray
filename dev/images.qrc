@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="images">
+    <file>scramp_fish.png</file>
+    <file>scramp_fish_warning.png</file>
+  </qresource>
+</RCC>

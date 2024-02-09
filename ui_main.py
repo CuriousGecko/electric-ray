@@ -9,15 +9,17 @@
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
+                            QMetaObject, QObject, QPoint, QRect, QSize, Qt,
+                            QTime, QUrl)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
+                           QFontDatabase, QGradient, QIcon, QImage,
+                           QKeySequence, QLinearGradient, QPainter, QPalette,
+                           QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QGroupBox, QLabel,
-    QMainWindow, QProgressBar, QSizePolicy, QWidget)
+                               QMainWindow, QProgressBar, QSizePolicy, QWidget)
+
 import images
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -45,7 +47,7 @@ class Ui_MainWindow(object):
         self.radio_slow_charge.setFont(font)
         self.label_ch_mode = QLabel(self.groupBox_2)
         self.label_ch_mode.setObjectName(u"label_ch_mode")
-        self.label_ch_mode.setGeometry(QRect(20, 10, 201, 61))
+        self.label_ch_mode.setGeometry(QRect(20, 10, 151, 61))
         font1 = QFont()
         font1.setPointSize(16)
         self.label_ch_mode.setFont(font1)
@@ -54,7 +56,7 @@ class Ui_MainWindow(object):
         self.groupBox_3.setGeometry(QRect(20, 300, 381, 81))
         self.label_co_mode = QLabel(self.groupBox_3)
         self.label_co_mode.setObjectName(u"label_co_mode")
-        self.label_co_mode.setGeometry(QRect(20, 10, 131, 61))
+        self.label_co_mode.setGeometry(QRect(20, 10, 151, 61))
         self.label_co_mode.setFont(font1)
         self.button_conservation = QCheckBox(self.groupBox_3)
         self.button_conservation.setObjectName(u"button_conservation")
@@ -74,7 +76,7 @@ class Ui_MainWindow(object):
         self.groupBox.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
         self.label_status = QLabel(self.groupBox)
         self.label_status.setObjectName(u"label_status")
-        self.label_status.setGeometry(QRect(20, 10, 201, 61))
+        self.label_status.setGeometry(QRect(20, 10, 151, 61))
         self.label_status.setFont(font1)
         self.label_current_status = QLabel(self.groupBox)
         self.label_current_status.setObjectName(u"label_current_status")
@@ -133,6 +135,6 @@ class Ui_MainWindow(object):
         self.groupBox.setTitle("")
         self.label_status.setText(QCoreApplication.translate("MainWindow", u"Battery status", None))
         self.label_current_status.setText(QCoreApplication.translate("MainWindow", u"n/a", None))
-        self.label_remaining.setText(QCoreApplication.translate("MainWindow", u"Consrvation is complete.", None))
+        self.label_remaining.setText(QCoreApplication.translate("MainWindow", u". . .", None))
     # retranslateUi
 
