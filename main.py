@@ -11,6 +11,10 @@ from ui_main import Ui_MainWindow
 
 
 class BatteryCharging(QtWidgets.QMainWindow):
+    ICON_PNG = ':images/scramp_fish.png'
+    ICON_WARNING_PNG = ':images/scramp_fish_warning.png'
+    TIMER_IN_MS = 3000
+    CHARGE_LIMIT = 65
     MODES = {
         'rapid': '0x07',
         'slow': '0x08',
@@ -37,22 +41,22 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.ui.button_conservation.clicked.connect(self.battery_conservation)
 
         self.battery_timer = QtCore.QTimer(self)
-        self.battery_timer.start(3000)
+        self.battery_timer.start(self.TIMER_IN_MS)
         self.battery_timer.timeout.connect(self.battery_status)
 
         self.conservation_timer = QtCore.QTimer(self)
-        self.conservation_timer.start(3000)
+        self.conservation_timer.start(self.TIMER_IN_MS)
         self.conservation_timer.timeout.connect(self.battery_conservation)
 
-        self.setWindowIcon(QtGui.QIcon(':images/scramp_fish.png'))
+        self.setWindowIcon(QtGui.QIcon(self.ICON_PNG))
 
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QtGui.QIcon(':images/scramp_fish.png'))
+        self.tray_icon.setIcon(QtGui.QIcon(self.ICON_PNG))
         self.tray_icon.setVisible(True)
         self.tray_icon.activated.connect(self.tray_icon_activated)
 
-        show_action = QtGui.QAction("Open Scramp-fish", self)
-        exit_action = QtGui.QAction("Quit", self)
+        show_action = QtGui.QAction('Open Scramp-fish', self)
+        exit_action = QtGui.QAction('Quit', self)
         show_action.triggered.connect(self.show)
         exit_action.triggered.connect(QtWidgets.QApplication.instance().quit)
 
@@ -198,15 +202,15 @@ class BatteryCharging(QtWidgets.QMainWindow):
     def update_ui_conservation_info(self):
         if self.charging_status == 'Discharging':
             self._update_discharging_info()
-        elif self.current_charge > 65:
+        elif self.current_charge > self.CHARGE_LIMIT:
             self._update_warning_info()
-        elif self.current_charge <= 65:
+        elif self.current_charge <= self.CHARGE_LIMIT:
             self._update_normal_info()
 
     def _update_discharging_info(self):
         self.conservation_info = False
         if self.warning_icon:
-            self._set_tray_icon(':images/scramp_fish.png')
+            self._set_tray_icon(self.ICON_PNG)
             self.warning_icon = False
 
     def _update_warning_info(self):
@@ -214,12 +218,12 @@ class BatteryCharging(QtWidgets.QMainWindow):
             'Please, discharge the battery to 60%'
         )
         if not self.warning_icon:
-            self._set_tray_icon(':images/scramp_fish_warning.png')
+            self._set_tray_icon(self.ICON_WARNING_PNG)
             self.warning_icon = True
 
     def _update_normal_info(self):
         if self.warning_icon:
-            self._set_tray_icon(':images/scramp_fish.png')
+            self._set_tray_icon(self.ICON_PNG)
             self.warning_icon = False
         if self.charging_status == 'Not charging':
             self.ui.label_remaining.setText(
