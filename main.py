@@ -107,6 +107,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             f'{self.ChargingMode[mode].value}" '
             '| tee /proc/acpi/call'
         )
+
         result = activation.returncode == 0
         self.setup_ui_charging_mode(mode, activated=result)
 
@@ -166,48 +167,64 @@ class BatteryCharging(QtWidgets.QMainWindow):
         try:
             charging_status = data[0][11:]
             charge_percentage = int(data[1][:-1].strip())
-            capacity = ' '.join(re.findall(r'\d+', data[3][-4:]))
             until_charged_or_discharged = data[2]
+            capacity = ' '.join(re.findall(r'\d+', data[3][-4:]))
         except (ValueError, IndexError):
             self.warning(reason='INCORRECT_DATA')
             return None
+
         return (
             charging_status,
             charge_percentage,
-            capacity,
             until_charged_or_discharged,
+            capacity,
         )
 
     def battery_status(self):
         data = self.get_battery_data()
+
         if data is None:
             return
 
         validated_data = self.validate_battery_data(data)
+
         if validated_data is None:
             return
 
         (
             charging_status,
             charge_percentage,
+            until_charged_or_discharged,
             capacity,
-            until_charged_or_discharged
         ) = validated_data
 
-        self.ui.progressbar_battery.setValue(charge_percentage)
-        self.ui.label_current_status.setText(charging_status)
+        self.update_ui_battery_status(
+            charging_status,
+            charge_percentage,
+            until_charged_or_discharged,
+            capacity
+        )
 
-        self.charge_percentage = charge_percentage
-        self.charging_status = charging_status
-        self.until_charged_or_discharged = until_charged_or_discharged
-        self.capacity = capacity
+    def update_ui_battery_status(
+            self,
+            charging_status,
+            charge_percentage,
+            until_charged_or_discharged,
+            capacity
+    ):
+        self.ui.label_current_status.setText(charging_status)
+        self.ui.progressbar_battery.setValue(charge_percentage)
 
         if 'zero' in until_charged_or_discharged:
             self.ui.label_remaining.setText('. . .')
         elif self.conservation_info:
+            self.charging_status = charging_status
+            self.charge_percentage = charge_percentage
+            self.until_charged_or_discharged = until_charged_or_discharged
+            self.capacity = capacity
             return
         elif self.charging_status == 'Not charging':
-            self.ui.label_remaining.setText(f'Capacity: {self.capacity}%')
+            self.ui.label_remaining.setText(f'Capacity: {capacity}%')
         elif self.charging_status in ('Charging', 'Discharging'):
             self.ui.label_remaining.setText(until_charged_or_discharged)
 
@@ -250,6 +267,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             f'&& echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC 0x08" '
             f'| tee /proc/acpi/call'
         )
+
         return self.run_shell_command(command)
 
     def deactivate_conservation_mode(self):
@@ -258,6 +276,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             f'{self.ChargingMode.DEACTIVATE_CONSERVATION.value}" '
             f'| tee /proc/acpi/call'
         )
+
         return self.run_shell_command(command)
 
     def update_ui_conservation_info(self):
@@ -306,6 +325,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             text=True,
             capture_output=True
         ).stdout
+
         return bool(int(check_conservation_mode))
 
     def save_current_charging_mode(self, mode):
@@ -316,6 +336,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
         if self.sys_conservation_mode_is_active():
             self.ui.button_conservation.setChecked(True)
             self.setup_ui_charging_mode('SLOW', True)
+            self.conservation_info = True
         else:
             charging_mode_warning = 'Select the charging mode.'
             if os.path.exists('charging_mode.json'):
