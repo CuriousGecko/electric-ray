@@ -42,8 +42,9 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.charging_status = None
-        self.current_charge = None
+        self.charge_percentage = None
         self.capacity = None
+        self.until_charged_or_discharged = None
         self.conservation_info = False
         self.warning_icon = False
 
@@ -144,9 +145,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
         if message:
             self.ui.label_remaining.setText(message)
 
-        if not self.warning_icon:
-            self._set_tray_icon('warning')
-            self.warning_icon = True
+        self.set_tray_icon('warning')
 
     def get_battery_data(self):
         try:
@@ -163,17 +162,18 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
     def validate_battery_data(self, data):
         data = re.split(r'\n|,', data)
+
         try:
-            charge_percentage = int(data[1][:-1].strip())
             charging_status = data[0][11:]
+            charge_percentage = int(data[1][:-1].strip())
             capacity = ' '.join(re.findall(r'\d+', data[3][-4:]))
             until_charged_or_discharged = data[2]
         except (ValueError, IndexError):
             self.warning(reason='INCORRECT_DATA')
             return None
         return (
-            charge_percentage,
             charging_status,
+            charge_percentage,
             capacity,
             until_charged_or_discharged,
         )
@@ -188,32 +188,36 @@ class BatteryCharging(QtWidgets.QMainWindow):
             return
 
         (
-            current_charge,
             charging_status,
+            charge_percentage,
             capacity,
             until_charged_or_discharged
         ) = validated_data
 
-        self.ui.progressbar_battery.setValue(current_charge)
+        self.ui.progressbar_battery.setValue(charge_percentage)
         self.ui.label_current_status.setText(charging_status)
 
-        self.current_charge = current_charge
+        self.charge_percentage = charge_percentage
         self.charging_status = charging_status
+        self.until_charged_or_discharged = until_charged_or_discharged
         self.capacity = capacity
 
         if 'zero' in until_charged_or_discharged:
             self.ui.label_remaining.setText('. . .')
         elif self.conservation_info:
-            pass
+            return
         elif self.charging_status == 'Not charging':
             self.ui.label_remaining.setText(f'Capacity: {self.capacity}%')
         elif self.charging_status in ('Charging', 'Discharging'):
             self.ui.label_remaining.setText(until_charged_or_discharged)
 
+        self.set_tray_icon('normal')
+
     def battery_conservation(self):
         sys_conservation_mode_is_active = (
             self.sys_conservation_mode_is_active()
         )
+
         if self.ui.button_conservation.isChecked():
             if sys_conservation_mode_is_active:
                 if not self.ui.radio_slow_charge.isChecked():
@@ -258,37 +262,38 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
     def update_ui_conservation_info(self):
         if self.charging_status == 'n/a':
-            pass
+            return
         elif self.charging_status == 'Discharging':
-            self._update_discharging_info()
-        elif self.current_charge > self.CHARGE_LIMIT:
+            self.update_normal_info()
+        elif self.charge_percentage > self.CHARGE_LIMIT:
             self.warning(reason='CHARGE_LIMIT')
-        elif self.current_charge <= self.CHARGE_LIMIT:
-            self._update_normal_info()
+        else:
+            self.update_normal_info()
 
-    def _update_discharging_info(self):
-        self.conservation_info = False
-        self._set_tray_icon(mode='normal')
+    def update_normal_info(self):
+        self.set_tray_icon(mode='normal')
 
-    def _update_normal_info(self):
-        self._set_tray_icon(mode='normal')
         if self.charging_status == 'Not charging':
             self.ui.label_remaining.setText(
                 f'Conservation is complete. '
                 f'Last full capacity: {self.capacity}%'
             )
         elif self.charging_status == 'Charging':
-            self.ui.label_remaining.setText('Conservation')
+            self.ui.label_remaining.setText('Conservation in progress.')
+        elif self.charging_status == 'Discharging':
+            self.ui.label_remaining.setText(self.until_charged_or_discharged)
 
-    def _set_tray_icon(self, mode):
+    def set_tray_icon(self, mode):
         modes = {
             'normal': self.ICON_PNG,
             'warning': self.ICON_WARNING_PNG,
         }
 
-        if mode in modes:
-            self.warning_icon = (mode == 'warning')
-
+        if mode == 'normal' and self.warning_icon:
+            self.warning_icon = False
+            self.tray_icon.setIcon(QtGui.QIcon(modes[mode]))
+        elif mode == 'warning' and not self.warning_icon:
+            self.warning_icon = True
             self.tray_icon.setIcon(QtGui.QIcon(modes[mode]))
 
     def sys_conservation_mode_is_active(self):
