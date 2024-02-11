@@ -4,6 +4,7 @@ import re
 import subprocess
 import sys
 from enum import Enum
+from typing import Optional
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -80,11 +81,11 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.tray_icon_menu.addAction(show_action)
         self.tray_icon_menu.addAction(exit_action)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
         event.ignore()
         self.hide()
 
-    def tray_icon_activated(self, reason):
+    def tray_icon_activated(self, reason) -> None:
         if reason == self.tray_icon.ActivationReason.Trigger:
             if self.isHidden():
                 self.show()
@@ -93,7 +94,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
         elif reason == self.tray_icon.ActivationReason.DoubleClick:
             self.show()
 
-    def run_shell_command(self, command):
+    def run_shell_command(self, command) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             ['pkexec', 'sh', '-c', command],
             shell=False,
@@ -101,7 +102,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             capture_output=True,
         )
 
-    def activate_charging_mode(self, mode):
+    def activate_charging_mode(self, mode) -> None:
         activation = self.run_shell_command(
             f'echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC '
             f'{self.ChargingMode[mode].value}" '
@@ -111,7 +112,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
         result = activation.returncode == 0
         self.setup_ui_charging_mode(mode, activated=result)
 
-    def setup_ui_charging_mode(self, mode, activated: bool):
+    def setup_ui_charging_mode(self, mode, activated: bool) -> None:
         if not activated:
             if mode == 'RAPID':
                 self.ui.radio_rapid_charge.setChecked(False)
@@ -132,7 +133,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
                 self.ui.radio_rapid_charge.setEnabled(True)
                 self.save_current_charging_mode('SLOW')
 
-    def warning(self, reason):
+    def warning(self, reason) -> None:
         warning_info = self.WarningInfo[reason].value
         status = warning_info.get('status')
         charge = warning_info.get('charge')
@@ -148,7 +149,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
         self.set_tray_icon('warning')
 
-    def get_battery_data(self):
+    def get_battery_data(self) -> Optional[str]:
         try:
             return subprocess.run(
                 ['acpi', '-i'],
@@ -161,7 +162,9 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self.warning(reason='NO_ACPI')
             return None
 
-    def validate_battery_data(self, data):
+    def validate_battery_data(
+            self, data
+    ):
         data = re.split(r'\n|,', data)
 
         try:
@@ -180,7 +183,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             capacity,
         )
 
-    def battery_status(self):
+    def battery_status(self) -> None:
         data = self.get_battery_data()
 
         if data is None:
@@ -211,7 +214,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             charge_percentage,
             until_charged_or_discharged,
             capacity
-    ):
+    ) -> None:
         self.ui.label_current_status.setText(charging_status)
         self.ui.progressbar_battery.setValue(charge_percentage)
 
@@ -223,14 +226,14 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self.until_charged_or_discharged = until_charged_or_discharged
             self.capacity = capacity
             return
-        elif self.charging_status == 'Not charging':
+        elif charging_status == 'Not charging':
             self.ui.label_remaining.setText(f'Capacity: {capacity}%')
-        elif self.charging_status in ('Charging', 'Discharging'):
+        elif charging_status in ('Charging', 'Discharging'):
             self.ui.label_remaining.setText(until_charged_or_discharged)
 
         self.set_tray_icon('normal')
 
-    def battery_conservation(self):
+    def battery_conservation(self) -> None:
         sys_conservation_mode_is_active = (
             self.sys_conservation_mode_is_active()
         )
@@ -259,7 +262,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self.conservation_info = True
             self.update_ui_conservation_info()
 
-    def activate_conservation_mode(self):
+    def activate_conservation_mode(self) -> subprocess.CompletedProcess[str]:
         command = (
             f'echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC '
             f'{self.ChargingMode.ACTIVATE_CONSERVATION.value}" '
@@ -270,7 +273,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
         return self.run_shell_command(command)
 
-    def deactivate_conservation_mode(self):
+    def deactivate_conservation_mode(self) -> subprocess.CompletedProcess[str]:
         command = (
             f'echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC '
             f'{self.ChargingMode.DEACTIVATE_CONSERVATION.value}" '
@@ -279,7 +282,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
         return self.run_shell_command(command)
 
-    def update_ui_conservation_info(self):
+    def update_ui_conservation_info(self) -> None:
         if self.charging_status == 'n/a':
             return
         elif self.charging_status == 'Discharging':
@@ -289,7 +292,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
         else:
             self.update_normal_info()
 
-    def update_normal_info(self):
+    def update_normal_info(self) -> None:
         self.set_tray_icon(mode='normal')
 
         if self.charging_status == 'Not charging':
@@ -302,7 +305,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
         elif self.charging_status == 'Discharging':
             self.ui.label_remaining.setText(self.until_charged_or_discharged)
 
-    def set_tray_icon(self, mode):
+    def set_tray_icon(self, mode) -> None:
         modes = {
             'normal': self.ICON_PNG,
             'warning': self.ICON_WARNING_PNG,
@@ -315,7 +318,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self.warning_icon = True
             self.tray_icon.setIcon(QtGui.QIcon(modes[mode]))
 
-    def sys_conservation_mode_is_active(self):
+    def sys_conservation_mode_is_active(self) -> bool:
         check_conservation_mode = subprocess.run(
             [
                 'cat',
@@ -328,11 +331,11 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
         return bool(int(check_conservation_mode))
 
-    def save_current_charging_mode(self, mode):
+    def save_current_charging_mode(self, mode) -> None:
         with open('charging_mode.json', 'w+', encoding='utf8') as write_file:
             json.dump({'charging_mode': mode}, write_file)
 
-    def load_last_charging_mode(self):
+    def load_last_charging_mode(self) -> None:
         if self.sys_conservation_mode_is_active():
             self.ui.button_conservation.setChecked(True)
             self.setup_ui_charging_mode('SLOW', True)
