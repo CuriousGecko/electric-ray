@@ -63,3 +63,8 @@ class Command(Enum):
         '/sys/bus/platform/drivers'
         '/ideapad_acpi/VPC2004:00/conservation_mode'
     ]
+
+
+class MenuAction(Enum):
+    SHOW_WINDOW = 'Open Scramp-fish'
+    QUIT = 'Quit'

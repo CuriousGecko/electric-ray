@@ -218,7 +218,7 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="label_remaining">
+    <widget class="QLabel" name="label_message">
      <property name="enabled">
       <bool>true</bool>
      </property>
