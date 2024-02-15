@@ -28,7 +28,7 @@ class WarningInfo(Enum):
         'message': 'Please discharge the battery to 60%.',
     }
     CHARGING_MODE: dict[str, Union[str, int]] = {
-        'message': 'Please select the charging mode.',
+        'message': 'Please select the charging mode or conservation.',
     }
 
 
@@ -68,3 +68,8 @@ class Command(Enum):
 class MenuAction(Enum):
     SHOW_WINDOW = 'Open Scramp-fish'
     QUIT = 'Quit'
+
+
+class Message(Enum):
+    DOTS = '. . .'
+    CONSERVATION = 'Conservation in progress.'
