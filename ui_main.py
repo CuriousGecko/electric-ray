@@ -9,16 +9,15 @@
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QGroupBox, QLabel,
-                               QMainWindow, QProgressBar, QSizePolicy, QWidget)
+    QMainWindow, QProgressBar, QSizePolicy, QWidget)
 import images
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -26,8 +25,7 @@ class Ui_MainWindow(object):
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(421, 402)
         icon = QIcon()
-        icon.addFile(u":/newPrefix/scramp_fish.png", QSize(), QIcon.Normal,
-                     QIcon.Off)
+        icon.addFile(u":/newPrefix/scramp_fish.png", QSize(), QIcon.Normal, QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setDockNestingEnabled(False)
         self.centralwidget = QWidget(MainWindow)
@@ -41,10 +39,10 @@ class Ui_MainWindow(object):
         font = QFont()
         font.setPointSize(12)
         self.radio_rapid_charge.setFont(font)
-        self.radio_slow_charge = QCheckBox(self.groupBox_2)
-        self.radio_slow_charge.setObjectName(u"radio_slow_charge")
-        self.radio_slow_charge.setGeometry(QRect(230, 50, 141, 31))
-        self.radio_slow_charge.setFont(font)
+        self.radio_regular_charge = QCheckBox(self.groupBox_2)
+        self.radio_regular_charge.setObjectName(u"radio_regular_charge")
+        self.radio_regular_charge.setGeometry(QRect(230, 50, 141, 31))
+        self.radio_regular_charge.setFont(font)
         self.label_ch_mode = QLabel(self.groupBox_2)
         self.label_ch_mode.setObjectName(u"label_ch_mode")
         self.label_ch_mode.setGeometry(QRect(20, 10, 151, 61))
@@ -58,10 +56,10 @@ class Ui_MainWindow(object):
         self.label_co_mode.setObjectName(u"label_co_mode")
         self.label_co_mode.setGeometry(QRect(20, 10, 151, 61))
         self.label_co_mode.setFont(font1)
-        self.button_conservation = QCheckBox(self.groupBox_3)
-        self.button_conservation.setObjectName(u"button_conservation")
-        self.button_conservation.setGeometry(QRect(230, 30, 121, 23))
-        self.button_conservation.setFont(font)
+        self.checkbox_conservation = QCheckBox(self.groupBox_3)
+        self.checkbox_conservation.setObjectName(u"checkbox_conservation")
+        self.checkbox_conservation.setGeometry(QRect(230, 30, 121, 23))
+        self.checkbox_conservation.setFont(font)
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
         self.groupBox.setEnabled(True)
@@ -69,29 +67,26 @@ class Ui_MainWindow(object):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.groupBox.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
         self.groupBox.setSizePolicy(sizePolicy)
         self.groupBox.setMinimumSize(QSize(0, 0))
         self.groupBox.setSizeIncrement(QSize(0, 0))
-        self.groupBox.setAlignment(
-            Qt.AlignLeading | Qt.AlignLeft | Qt.AlignVCenter)
+        self.groupBox.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
         self.label_status = QLabel(self.groupBox)
         self.label_status.setObjectName(u"label_status")
         self.label_status.setGeometry(QRect(20, 10, 151, 61))
         self.label_status.setFont(font1)
-        self.label_current_status = QLabel(self.groupBox)
-        self.label_current_status.setObjectName(u"label_current_status")
-        self.label_current_status.setGeometry(QRect(212, 20, 161, 20))
-        self.label_current_status.setMaximumSize(QSize(16777215, 30))
-        self.label_current_status.setFont(font)
-        self.label_current_status.setAlignment(Qt.AlignCenter)
+        self.label_charging_status = QLabel(self.groupBox)
+        self.label_charging_status.setObjectName(u"label_charging_status")
+        self.label_charging_status.setGeometry(QRect(212, 20, 161, 20))
+        self.label_charging_status.setMaximumSize(QSize(16777215, 30))
+        self.label_charging_status.setFont(font)
+        self.label_charging_status.setAlignment(Qt.AlignCenter)
         self.label_message = QLabel(self.groupBox)
         self.label_message.setObjectName(u"label_message")
         self.label_message.setEnabled(True)
         self.label_message.setGeometry(QRect(210, 80, 159, 51))
-        sizePolicy.setHeightForWidth(
-            self.label_message.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.label_message.sizePolicy().hasHeightForWidth())
         self.label_message.setSizePolicy(sizePolicy)
         self.label_message.setMinimumSize(QSize(159, 0))
         self.label_message.setMaximumSize(QSize(0, 60))
@@ -111,8 +106,7 @@ class Ui_MainWindow(object):
         self.progressbar_battery = QProgressBar(self.groupBox)
         self.progressbar_battery.setObjectName(u"progressbar_battery")
         self.progressbar_battery.setGeometry(QRect(210, 50, 161, 30))
-        sizePolicy.setHeightForWidth(
-            self.progressbar_battery.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.progressbar_battery.sizePolicy().hasHeightForWidth())
         self.progressbar_battery.setSizePolicy(sizePolicy)
         self.progressbar_battery.setMinimumSize(QSize(0, 0))
         self.progressbar_battery.setMaximumSize(QSize(180, 30))
@@ -125,29 +119,20 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
-
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(
-            QCoreApplication.translate("MainWindow", u"Scramp-fish", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Scramp-fish", None))
         self.groupBox_2.setTitle("")
-        self.radio_rapid_charge.setText(
-            QCoreApplication.translate("MainWindow", u"Rapid charge", None))
-        self.radio_slow_charge.setText(
-            QCoreApplication.translate("MainWindow", u"Slow charge", None))
-        self.label_ch_mode.setText(
-            QCoreApplication.translate("MainWindow", u"Charging mode", None))
+        self.radio_rapid_charge.setText(QCoreApplication.translate("MainWindow", u"Rapid charge", None))
+        self.radio_regular_charge.setText(QCoreApplication.translate("MainWindow", u"Regular charge", None))
+        self.label_ch_mode.setText(QCoreApplication.translate("MainWindow", u"Charging mode", None))
         self.groupBox_3.setTitle("")
-        self.label_co_mode.setText(
-            QCoreApplication.translate("MainWindow", u"Conservation", None))
-        self.button_conservation.setText(
-            QCoreApplication.translate("MainWindow", u"De/activation", None))
+        self.label_co_mode.setText(QCoreApplication.translate("MainWindow", u"Conservation", None))
+        self.checkbox_conservation.setText(QCoreApplication.translate("MainWindow", u"De/activation", None))
         self.groupBox.setTitle("")
-        self.label_status.setText(
-            QCoreApplication.translate("MainWindow", u"Battery status", None))
-        self.label_current_status.setText(
-            QCoreApplication.translate("MainWindow", u"n/a", None))
-        self.label_message.setText(
-            QCoreApplication.translate("MainWindow", u". . .", None))
+        self.label_status.setText(QCoreApplication.translate("MainWindow", u"Battery status", None))
+        self.label_charging_status.setText(QCoreApplication.translate("MainWindow", u"n/a", None))
+        self.label_message.setText(QCoreApplication.translate("MainWindow", u". . .", None))
     # retranslateUi
+

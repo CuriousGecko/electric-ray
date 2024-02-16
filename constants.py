@@ -5,7 +5,7 @@ from typing import Union
 class Settings(Enum):
     CHARGING_MODE_JSON: str = 'charging_mode.json'
     TIMER_INTERVAL_MS: int = 3000
-    CHARGE_LIMIT: int = 65
+    CHARGE_LIMIT_WARNING: int = 65
 
 
 class Resources(Enum):
@@ -15,20 +15,23 @@ class Resources(Enum):
 
 class WarningInfo(Enum):
     NO_ACPI: dict[str, Union[str, int]] = {
-        'status': 'n/a',
-        'charge': 0,
+        'charging_status': 'n/a',
+        'charge_percent': 0,
         'message': 'Check your ACPI client',
     }
     INCORRECT_DATA: dict[str, Union[str, int]] = {
-        'status': 'n/a',
-        'charge': 0,
+        'charging_status': 'n/a',
+        'charge_percent': 0,
         'message': 'Data error',
     }
     CHARGE_LIMIT: dict[str, Union[str, int]] = {
         'message': 'Please discharge the battery to 60%.',
     }
-    CHARGING_MODE: dict[str, Union[str, int]] = {
+    INVALID_CHARGING_MODE_VALUE: dict[str, Union[str, int]] = {
         'message': 'Please select the charging mode or conservation.',
+    }
+    PERMISSION_DENIED: dict[str, Union[str, int]] = {
+        'message': "Check permissions of 'charging_mode.json'."
     }
 
 
@@ -38,9 +41,11 @@ class Command(Enum):
         'echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC 0x07" '
         '| tee /proc/acpi/call'
     ]
-    SLOW_ON: str = [
+    RAPID_OFF: str = [
         'pkexec', 'sh', '-c',
-        'echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC 0x08" '
+        'echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC 0x05" '
+        '| tee /proc/acpi/call '
+        '&& echo "\_SB.PCI0.LPC0.EC0.VPC0.SBMC 0x08" '
         '| tee /proc/acpi/call'
     ]
     BAT_INFO: str = [

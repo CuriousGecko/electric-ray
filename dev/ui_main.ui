@@ -51,7 +51,7 @@
       <string>Rapid charge</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="radio_slow_charge">
+    <widget class="QCheckBox" name="radio_regular_charge">
      <property name="geometry">
       <rect>
        <x>230</x>
@@ -66,7 +66,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Slow charge</string>
+      <string>Regular charge</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_ch_mode">
@@ -118,7 +118,7 @@
       <string>Conservation</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="button_conservation">
+    <widget class="QCheckBox" name="checkbox_conservation">
      <property name="geometry">
       <rect>
        <x>230</x>
@@ -191,7 +191,7 @@
       <string>Battery status</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_current_status">
+    <widget class="QLabel" name="label_charging_status">
      <property name="geometry">
       <rect>
        <x>212</x>
