@@ -71,10 +71,17 @@ class Command(Enum):
 
 
 class MenuAction(Enum):
-    SHOW_WINDOW = 'Open Scramp-fish'
-    QUIT = 'Quit'
+    SHOW_WINDOW: str = 'Open Scramp-fish'
+    QUIT: str = 'Quit'
 
 
 class Message(Enum):
-    DOTS = '. . .'
-    CONSERVATION = 'Conservation in progress.'
+    DOTS: str = '. . .'
+    CONSERVATION: str = 'Conservation in progress.'
+
+
+class BatteryData(Enum):
+    CHARGING_STATUS: int = 0
+    CHARGE_PERCENT: int = 1
+    UNTIL_CHARGED_OR_DISCHARGED: int = 2
+    CAPACITY: int = 3

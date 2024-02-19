@@ -20,10 +20,9 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.charge_percent: int = int()
         self.capacity: Optional[int] = None
         self.until_charged_or_discharged: str = str()
-        self.show_conservation_info: bool = False
         self.conservation: Optional[bool] = False
         self.warning_icon: bool = False
-        self.charging_mode_selected: bool = False
+        self.warning_reason: Optional[str] = None
 
         self.ui.radio_rapid_charge.clicked.connect(
             lambda: self.switch_charging_mode(rapid=True),
@@ -82,16 +81,19 @@ class BatteryCharging(QtWidgets.QMainWindow):
         )
 
     def warning(self, reason: str) -> None:
+        self.warning_reason = reason
+
         warning_info = const.WarningInfo[reason].value
         charging_status = warning_info.get('charging_status')
         charge_percent = warning_info.get('charge_percent')
         message = warning_info.get('message')
 
         if charging_status:
-            self.charging_status = charging_status
             self.ui.label_charging_status.setText(charging_status)
+
         if charge_percent is not None:
             self.ui.progressbar_battery.setValue(charge_percent)
+
         if message:
             self.ui.label_message.setText(message)
 
@@ -117,9 +119,10 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self,
             conservation: bool
     ) -> None:
-        self.charging_mode_selected = True
         self.conservation = conservation
-        self.save_current_charging_mode(
+        self.warning_reason = None
+
+        self.save_charging_mode_json(
             rapid_selected=self.ui.radio_rapid_charge.isChecked(),
             conservation=conservation,
         )
@@ -154,27 +157,37 @@ class BatteryCharging(QtWidgets.QMainWindow):
             return (
                 self.run_shell_command(const.Command.BAT_INFO.value)
             ).stdout.strip()
+
         except FileNotFoundError:
-            self.warning(reason='NO_ACPI')
+            self.warning(reason=const.WarningInfo.NO_ACPI.name)
             return None
 
     def validate_battery_data(
             self,
             data: Optional[str]
     ) -> Optional[tuple[str, int, str, Optional[int]]]:
-        if data is None:
-            return None
+        if not data:
+            return data
 
         data = re.split(r'[\n,]', data)
 
         try:
-            charging_status = data[0][11:]
-            charge_percent = int(data[1][:-1].strip())
-            until_charged_or_discharged = data[2]
-            capacity_match = re.findall(r'\d+', data[3][-4:])
+            charging_status = (
+                data[const.BatteryData.CHARGING_STATUS.value][11:]
+            )
+            charge_percent = (
+                int(data[const.BatteryData.CHARGE_PERCENT.value][:-1].strip())
+            )
+            until_charged_or_discharged = (
+                data[const.BatteryData.UNTIL_CHARGED_OR_DISCHARGED.value]
+            )
+            capacity_match = re.findall(
+                r'\d+', data[const.BatteryData.CAPACITY.value][-4:]
+            )
             capacity = int(''.join(capacity_match)) if capacity_match else None
+
         except (ValueError, IndexError):
-            self.warning(reason='INCORRECT_DATA')
+            self.warning(reason=const.WarningInfo.INCORRECT_DATA.name)
             return None
 
         return (
@@ -188,8 +201,14 @@ class BatteryCharging(QtWidgets.QMainWindow):
         data = self.get_battery_data()
         validated_data = self.validate_battery_data(data)
 
-        if validated_data is None:
+        if not validated_data:
             return
+
+        if self.warning_reason in (
+                const.WarningInfo.NO_ACPI.name,
+                const.WarningInfo.INCORRECT_DATA.name,
+        ):
+            self.warning_reason = None
 
         (
             charging_status,
@@ -205,22 +224,18 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
         self.update_ui_battery_status()
 
-        if self.charging_mode_selected:
-            self.check_battery_conservation()
+        self.check_battery_conservation()
 
     def update_ui_battery_status(self) -> None:
         self.ui.label_charging_status.setText(self.charging_status)
         self.ui.progressbar_battery.setValue(self.charge_percent)
 
-        if not self.charging_mode_selected:
+        if self.conservation in (True, None):
             return
-        elif (
-                'zero' in self.until_charged_or_discharged
-                and self.charging_mode_selected
-        ):
+        elif self.warning_reason:
+            return
+        elif 'zero' in self.until_charged_or_discharged:
             self.ui.label_message.setText(const.Message.DOTS.value)
-        elif self.conservation:
-            return
         elif self.charging_status in ('Not charging', 'Full'):
             self.ui.label_message.setText(f'Capacity: {self.capacity}%')
         elif self.charging_status in ('Charging', 'Discharging'):
@@ -251,14 +266,13 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
     def check_battery_conservation(self) -> None:
         conservation_is_active = self.sys_conservation_mode_is_active()
-        self.show_conservation_info = conservation_is_active
 
         if conservation_is_active:
             self.handle_active_conservation_mode()
         else:
             self.handle_inactive_conservation_mode()
 
-        if self.charging_mode_selected and conservation_is_active:
+        if conservation_is_active and self.conservation:
             self.update_ui_conservation()
 
     def handle_active_conservation_mode(self) -> None:
@@ -267,21 +281,26 @@ class BatteryCharging(QtWidgets.QMainWindow):
             or not self.ui.radio_regular_charge.isChecked()
             or not self.ui.checkbox_conservation.isChecked()
         ):
-            self.reset_charging_mode()
-        elif not self.charging_mode_selected or not self.conservation:
+            if self.conservation is not None:
+                self.reset_charging_mode()
+
+        elif not self.conservation:
             self.update_charging_mode_settings(conservation=True)
 
     def handle_inactive_conservation_mode(self) -> None:
         if self.ui.checkbox_conservation.isChecked():
-            self.reset_charging_mode()
-        elif not self.charging_mode_selected or self.conservation:
+            if self.conservation is not None:
+                self.reset_charging_mode()
+
+        elif self.conservation:
             self.update_charging_mode_settings(conservation=False)
 
     def reset_charging_mode(self) -> None:
-        self.warning(reason='INVALID_CHARGING_MODE_VALUE')
-        self.charging_mode_selected = False
+        self.conservation = None
+
+        self.warning(reason=const.WarningInfo.INVALID_CHARGING_MODE_VALUE.name)
         self.reset_ui_checkboxes()
-        self.save_current_charging_mode(
+        self.save_charging_mode_json(
             rapid_selected=None,
             conservation=None,
         )
@@ -294,16 +313,20 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.ui.checkbox_conservation.setChecked(False)
 
     def update_ui_conservation(self) -> None:
-        if self.charging_status == 'n/a':
+        if self.warning_reason not in (
+            None, const.WarningInfo.CHARGE_LIMIT.name,
+        ):
             return
-        elif self.charging_status == 'Discharging':
+
+        if self.charging_status == 'Discharging':
             self.update_conservation_normal_info()
         elif self.charge_percent > const.Settings.CHARGE_LIMIT_WARNING.value:
-            self.warning(reason='CHARGE_LIMIT')
+            self.warning(reason=const.WarningInfo.CHARGE_LIMIT.name)
         else:
             self.update_conservation_normal_info()
 
     def update_conservation_normal_info(self) -> None:
+        self.warning_reason = None
         self.set_tray_icon(warning=False)
 
         if self.charging_status == 'Not charging':
@@ -338,19 +361,26 @@ class BatteryCharging(QtWidgets.QMainWindow):
             const.Command.CHECK_CONSERVATION.value
         ).stdout))
 
-    def save_current_charging_mode(
+    def save_charging_mode_json(
             self,
             rapid_selected: Optional[bool],
             conservation: Optional[bool] = False
     ) -> None:
-        print('current charging mode saved')
-        with open(
-                const.Settings.CHARGING_MODE_JSON.value, 'w+', encoding='utf8',
-        ) as write_file:
-            json.dump({
-                'rapid_selected': rapid_selected,
-                'conservation': conservation,
-            }, write_file, indent=4,)
+        print('The current charging mode is saved.')
+
+        try:
+            with open(
+                const.Settings.CHARGING_MODE_JSON.value,
+                'w+',
+                encoding='utf8',
+            ) as write_file:
+                json.dump({
+                    'rapid_selected': rapid_selected,
+                    'conservation': conservation,
+                }, write_file, indent=4,)
+
+        except PermissionError:
+            self.warning(reason=const.WarningInfo.PERMISSION_DENIED.name)
 
     def load_last_charging_mode(self) -> None:
         charging_mode_path = const.Settings.CHARGING_MODE_JSON.value
@@ -361,22 +391,26 @@ class BatteryCharging(QtWidgets.QMainWindow):
                 rapid_is_active = mode.get('rapid_selected')
                 conservation = mode.get('conservation')
 
-            if not isinstance(rapid_is_active, bool) or not isinstance(
-                    conservation, bool):
+            if (
+                not isinstance(rapid_is_active, bool)
+                or not isinstance(conservation, bool)
+            ):
                 raise ValueError('Invalid charging mode value.')
+            else:
+                self.conservation = conservation
 
-            self.setup_ui_charging_mode(
-                rapid_selected=rapid_is_active,
-                activated=True,
-            )
-            self.ui.checkbox_conservation.setChecked(conservation)
-            self.charging_mode_selected = True
-            self.conservation = conservation
+                self.setup_ui_charging_mode(
+                    rapid_selected=rapid_is_active,
+                    activated=True,
+                )
+                self.ui.checkbox_conservation.setChecked(conservation)
 
         except (FileNotFoundError, JSONDecodeError, ValueError):
-            self.warning(reason='INVALID_CHARGING_MODE_VALUE')
+            self.warning(
+                reason=const.WarningInfo.INVALID_CHARGING_MODE_VALUE.name
+            )
         except PermissionError:
-            self.warning(reason='PERMISSION_DENIED')
+            self.warning(reason=const.WarningInfo.PERMISSION_DENIED.name)
 
         self.update_battery_status()
 
