@@ -82,7 +82,6 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
     def warning(self, reason: str) -> None:
         self.warning_reason = reason
-
         warning_info = const.WarningInfo[reason].value
         charging_status = warning_info.get('charging_status')
         charge_percent = warning_info.get('charge_percent')
@@ -98,6 +97,10 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self.ui.label_message.setText(message)
 
         self.set_tray_icon(warning=True)
+
+    def reset_warning(self):
+        self.warning_reason = None
+        self.set_tray_icon(warning=False)
 
     def switch_charging_mode(self, rapid: bool) -> None:
         result = self.toggle_charging_mode(rapid=rapid)
@@ -120,7 +123,8 @@ class BatteryCharging(QtWidgets.QMainWindow):
             conservation: bool
     ) -> None:
         self.conservation = conservation
-        self.warning_reason = None
+
+        self.reset_warning()
 
         self.save_charging_mode_json(
             rapid_selected=self.ui.radio_rapid_charge.isChecked(),
@@ -198,6 +202,8 @@ class BatteryCharging(QtWidgets.QMainWindow):
         )
 
     def update_battery_status(self) -> None:
+        print(self.warning_reason)
+        print(self.conservation)
         data = self.get_battery_data()
         validated_data = self.validate_battery_data(data)
 
@@ -208,7 +214,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
                 const.WarningInfo.NO_ACPI.name,
                 const.WarningInfo.INCORRECT_DATA.name,
         ):
-            self.warning_reason = None
+            self.reset_warning()
 
         (
             charging_status,
@@ -230,18 +236,15 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.ui.label_charging_status.setText(self.charging_status)
         self.ui.progressbar_battery.setValue(self.charge_percent)
 
-        if self.conservation in (True, None):
+        if self.conservation in (True, None) or self.warning_reason:
             return
-        elif self.warning_reason:
-            return
-        elif 'zero' in self.until_charged_or_discharged:
+
+        if 'zero' in self.until_charged_or_discharged:
             self.ui.label_message.setText(const.Message.DOTS.value)
         elif self.charging_status in ('Not charging', 'Full'):
             self.ui.label_message.setText(f'Capacity: {self.capacity}%')
         elif self.charging_status in ('Charging', 'Discharging'):
             self.ui.label_message.setText(self.until_charged_or_discharged)
-
-        self.set_tray_icon(warning=False)
 
     def switch_conservation_mode(self, activate: bool) -> None:
         desired_button_status = activate
@@ -281,7 +284,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             or not self.ui.radio_regular_charge.isChecked()
             or not self.ui.checkbox_conservation.isChecked()
         ):
-            if self.conservation is not None:
+            if self.conservation is not None or self.warning_reason is None:
                 self.reset_charging_mode()
 
         elif not self.conservation:
@@ -289,7 +292,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
 
     def handle_inactive_conservation_mode(self) -> None:
         if self.ui.checkbox_conservation.isChecked():
-            if self.conservation is not None:
+            if self.conservation is not None or self.warning_reason is None:
                 self.reset_charging_mode()
 
         elif self.conservation:
@@ -326,8 +329,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
             self.update_conservation_normal_info()
 
     def update_conservation_normal_info(self) -> None:
-        self.warning_reason = None
-        self.set_tray_icon(warning=False)
+        self.reset_warning()
 
         if self.charging_status == 'Not charging':
             self.ui.label_message.setText(
@@ -395,7 +397,7 @@ class BatteryCharging(QtWidgets.QMainWindow):
                 not isinstance(rapid_is_active, bool)
                 or not isinstance(conservation, bool)
             ):
-                raise ValueError('Invalid charging mode value.')
+                raise ValueError()
             else:
                 self.conservation = conservation
 
