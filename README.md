@@ -2,12 +2,12 @@
 
 ![screenshot.png](dev%2Fscreenshot.png)
 
-##### Features
+#### Features
 
 - Turn on/off "Rapid charge".
 - Activation of the "Conservation" mode.
 
-##### Description
+#### Description
 
 The "Rapid charge" mode can be extremely useful when you need
 quickly charge the battery and continue working. However, regular
@@ -19,14 +19,14 @@ battery degradation, especially when the device use external power source most
 of the time. When activated, battery charge will be limited up to 55-60% of its 
 capacity and the "Rapid charge" mode is automatically turned off.
 
-##### Tests
+#### Tests
 
 The application has been confirmed to work correctly on the following laptop 
 models:
 
 - Lenovo Legion 5-15ACH6H (2021, BIOS: GKCN60WW, GKCN64WW)
 
-##### Installation
+#### Installation
 
 1. Clone the repository to a location you want:
      ```bash
