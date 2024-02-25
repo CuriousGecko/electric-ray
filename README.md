@@ -31,7 +31,7 @@ models:
 1. Clone the repository to a location you want:
 
      ```bash
-     git clone git@github.com:CuriousGecko/scramp-fish.git
+     git clone git@github.com:CuriousGecko/electric-ray.git
      ```
 2. Go to the cloned repository folder:
 
