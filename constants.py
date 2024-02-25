@@ -9,8 +9,8 @@ class Settings(Enum):
 
 
 class Resources(Enum):
-    ICON_PNG: str = ':images/scramp_fish.png'
-    ICON_WARNING_PNG: str = ':images/scramp_fish_warning.png'
+    ICON_PNG: str = ':img/icon.png'
+    ICON_WARNING_PNG: str = ':img/icon_warning.png'
 
 
 class WarningInfo(Enum):
@@ -70,9 +70,10 @@ class Command(Enum):
     ]
 
 
-class MenuAction(Enum):
-    SHOW_WINDOW: str = 'Open Scramp-fish'
+class Menu(Enum):
+    SHOW_WINDOW: str = 'Open Electric ray'
     QUIT: str = 'Quit'
+    TOOLTIP: str = 'Electric ray'
 
 
 class Message(Enum):

@@ -1,6 +1,6 @@
 <RCC>
-  <qresource prefix="images">
-    <file>scramp_fish.png</file>
-    <file>scramp_fish_warning.png</file>
+  <qresource prefix="img">
+    <file alias="icon_warning.png">images/icons/electric_ray_warning.png</file>
+    <file alias="icon.png">images/icons/electric_ray.png</file>
   </qresource>
 </RCC>

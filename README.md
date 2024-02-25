@@ -1,4 +1,4 @@
-## Scramp-fish is a utility with a friendly GUI that will help extend the life cycle of your laptop's battery.
+## Electric ray is a utility with a friendly GUI that will help extend the life cycle of your laptop's battery.
 
 ![screenshot.png](dev%2Fscreenshot.png)
 
@@ -36,7 +36,7 @@ models:
 2. Go to the cloned repository folder:
 
      ```bash
-     cd scramp-fish
+     cd electric-ray
      ```
 3. Build and install the package:
 

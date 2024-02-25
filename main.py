@@ -43,12 +43,13 @@ class BatteryCharging(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(const.Resources.ICON_PNG.value))
 
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
+        self.tray_icon.setToolTip(const.Menu.TOOLTIP.value)
         self.tray_icon.setIcon(QtGui.QIcon(const.Resources.ICON_PNG.value))
         self.tray_icon.setVisible(True)
         self.tray_icon.activated.connect(self.tray_icon_activated)
 
-        show_action = QtGui.QAction(const.MenuAction.SHOW_WINDOW.value, self)
-        quit_action = QtGui.QAction(const.MenuAction.QUIT.value, self)
+        show_action = QtGui.QAction(const.Menu.SHOW_WINDOW.value, self)
+        quit_action = QtGui.QAction(const.Menu.QUIT.value, self)
         show_action.triggered.connect(self.show)
         quit_action.triggered.connect(QtWidgets.QApplication.instance().quit)
         self.tray_icon_menu = QtWidgets.QMenu()

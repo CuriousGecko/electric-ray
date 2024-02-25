@@ -9,17 +9,15 @@
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect, QSize, Qt,
-                            QTime, QUrl)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-                           QFontDatabase, QGradient, QIcon, QImage,
-                           QKeySequence, QLinearGradient, QPainter, QPalette,
-                           QPixmap, QRadialGradient, QTransform)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QGroupBox, QLabel,
-                               QMainWindow, QProgressBar, QSizePolicy, QWidget)
-
+    QMainWindow, QProgressBar, QSizePolicy, QWidget)
 import images
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -27,8 +25,9 @@ class Ui_MainWindow(object):
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(421, 402)
         icon = QIcon()
-        icon.addFile(u":/newPrefix/scramp_fish.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/img/icon", QSize(), QIcon.Normal, QIcon.Off)
         MainWindow.setWindowIcon(icon)
+        MainWindow.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         MainWindow.setDockNestingEnabled(False)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -124,7 +123,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Scramp-fish", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Electric ray", None))
         self.groupBox_2.setTitle("")
         self.radio_rapid_charge.setText(QCoreApplication.translate("MainWindow", u"Rapid charge", None))
         self.radio_regular_charge.setText(QCoreApplication.translate("MainWindow", u"Regular charge", None))

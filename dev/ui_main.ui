@@ -11,11 +11,14 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Scramp-fish</string>
+   <string>Electric ray</string>
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>:/newPrefix/scramp_fish.png</normaloff>:/newPrefix/scramp_fish.png</iconset>
+    <normaloff>:/img/icon</normaloff>:/img/icon</iconset>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
   </property>
   <property name="dockNestingEnabled">
    <bool>false</bool>
