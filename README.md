@@ -1,6 +1,6 @@
 ## Electric ray is a utility with a friendly GUI that will help extend the life cycle of your laptop's battery.
 
-![screenshot.png](dev%2Fscreenshot.png)
+![screenshot.png](images%2Fpictures%2Fscreenshot.png)
 
 #### Features
 
