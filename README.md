@@ -29,14 +29,17 @@ models:
 #### Installation
 
 1. Clone the repository to a location you want:
+
      ```bash
      git clone git@github.com:CuriousGecko/scramp-fish.git
      ```
 2. Go to the cloned repository folder:
+
      ```bash
      cd scramp-fish
      ```
 3. Build and install the package:
+
      ```bash
      makepkg -si
      ```
