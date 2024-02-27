@@ -1,0 +1,3 @@
+#!/bin/sh
+
+python3.11 /usr/share/lenovo-legion-electric-ray/main.py

@@ -1,6 +1,6 @@
 ## Electric ray is a utility with a friendly GUI that will help extend the life cycle of your laptop's battery.
 
-![screenshot.png](images%2Fpictures%2Fscreenshot.png)
+![screenshot.png](dev%2Fscreenshot.png)
 
 #### Features
 
@@ -38,11 +38,21 @@ models:
      ```bash
      cd electric-ray
      ```
-3. Build and install the package:
+3. Copy the images folder to the source folder:
+
+     ```bash
+     rsync -a images src
+     ```
+4. Build and install the package:
 
      ```bash
      makepkg -si
      ```
+5. Launch the application:
+
+     ```bash
+     electric-ray
+     ```
 
 #### Technology
-The project was developed in python3.9 using the PySide6 framework.
+The project was developed in Python using the PySide6 framework.
