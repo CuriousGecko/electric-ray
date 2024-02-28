@@ -1,9 +1,12 @@
+import os
 from enum import Enum
 from typing import Union
 
 
 class Settings(Enum):
-    CHARGING_MODE_JSON: str = 'charging_mode.json'
+    CHARGING_MODE_JSON: str = os.path.expanduser(
+        '~/.config/electric-ray/charging_mode.json',
+    )
     TIMER_INTERVAL_MS: int = 3000
     CHARGE_LIMIT_WARNING: int = 65
 
@@ -31,7 +34,7 @@ class WarningInfo(Enum):
         'message': 'Please select the charging mode or conservation.',
     }
     PERMISSION_DENIED: dict[str, Union[str, int]] = {
-        'message': "Check permissions of 'charging_mode.json'."
+        'message': "Check permissions of 'charging_mode.json'.",
     }
 
 
