@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Electric ray
+Comment=Lenovo Legion Rapid charge & Conservation
+GenericName=Battery Manager
+Exec=/usr/bin/electric-ray
+Icon=/usr/share/electric-ray/images/icons/electric_ray.png
+Type=Application
+Categories=Settings;Battery;
+Path=/usr/bin
